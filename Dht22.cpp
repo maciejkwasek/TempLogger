@@ -61,6 +61,8 @@ static bool evaluateBits(const  uint8_t* dataL, const uint8_t* dataH, uint8_t *b
         else
         {
             b[i/8] <<= 1;
+
+            /* magic -5 */
             if((dataL[i]-5) < dataH[i])
             {
                 b[i/8] |= 1;

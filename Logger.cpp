@@ -80,23 +80,8 @@ void Logger_Init(void)
 {
     if(!Ps_Load(0, (uint8_t*)&metaRecord, sizeof(metaRecord)))
     {
-        Serial.println("load metaRecord failed");
-
         loggerReset();
-
-        if(!Ps_Load(0, (uint8_t*)&metaRecord, sizeof(metaRecord)))
-        {
-            Serial.println("load metaRecord failed");
-        }
-        else
-        {
-            Serial.println("load 2 metaRecors ok");
-        }
-    }
-    else
-    {
-        Serial.print("load metaRecors ok, writeIndex = ");
-        Serial.println(metaRecord.writeIndex);
+        Ps_Load(0, (uint8_t*)&metaRecord, sizeof(metaRecord));
     }
 }
 
@@ -115,28 +100,24 @@ void Logger_Periodic(void)
 {
     const Rtc_ClockState_t* rtc = Rtc_GetRtcState();
 
-    if(rtc->sec%15 == 0)
+    if(rtc->sec == 0)
     {
-        Logger_Record_t newRecord;
-        const ThSensor_Data_t* thSensorData = ThSensor_GetData();
-
-        newRecord.flagAndDt = rtc->packed;
-        if(thSensorData->dataValid)
+        if((rtc->min % 15) == 0)
         {
-            newRecord.flagAndDt |= 1ul<<31;
+            Logger_Record_t newRecord;
+            const ThSensor_Data_t* thSensorData = ThSensor_GetData();
+
+            newRecord.flagAndDt = rtc->packed;
+            if(thSensorData->dataValid)
+            {
+                newRecord.flagAndDt |= 1ul<<31;
+            }
+
+            newRecord.t = thSensorData->t * 10;
+            newRecord.rh = thSensorData->rh;
+
+            saveRecord(&newRecord);
         }
-
-        newRecord.t = thSensorData->t * 10;
-        newRecord.rh = thSensorData->rh;
-
-        saveRecord(&newRecord);
-
-        #if 1
-        Serial.println("New record");
-        Serial.println(newRecord.flagAndDt);
-        Serial.println(newRecord.t);
-        Serial.println(newRecord.rh);
-        #endif
     }
 }
 
