@@ -24,8 +24,8 @@ void CmdTime_Settime(const char* params)
      * Params format: HH:MM:SS YYYY-MM-DD
      */
 
-    if(sscanf(params, "%d:%d:%d %d-%d-%d",
-              &hour, &min, &sec, &year, &month, &day)==6)
+    if(sscanf(params, "%d.%d.%d %d:%d:%d",
+              &year, &month, &day, &hour, &min, &sec)==6)
     {
         
         Rtc_ClockState_t newClockState;
@@ -64,9 +64,9 @@ void CmdTime_Gettime(const char* params)
     const Rtc_ClockState_t* rtcState = Rtc_GetRtcState();
     char buffer[20];
 
-    sprintf(buffer, "%02d:%02d:%02d %04d-%02d-%02d",
-            rtcState->hour, rtcState->min, rtcState->sec,
-            rtcState->year, rtcState->month, rtcState->day
+    sprintf(buffer, "%04d.%02d.%02d %02d:%02d:%02d",
+            rtcState->year, rtcState->month, rtcState->day,
+            rtcState->hour, rtcState->min, rtcState->sec
     );
 
     Serial.println(buffer);

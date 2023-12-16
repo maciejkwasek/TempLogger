@@ -36,9 +36,9 @@ void CmdLogger_GetRecords(const char* params)
                 Serial.print("-;");
             }
 
-            Serial.print(clk.year); Serial.print("-");
-            Serial.print(clk.month); Serial.print("-");
-            Serial.print(clk.day); Serial.print(" ");
+            Serial.print(clk.year); Serial.print(".");
+            Serial.print(clk.month); Serial.print(".");
+            Serial.print(clk.day); Serial.print(";");
 
             Serial.print(clk.hour); Serial.print(":");
             Serial.print(clk.min); Serial.print(":");
