@@ -15,27 +15,17 @@ static void printRecord(const Logger_Record_t* record)
     Rtc_ClockState_t clk;
     Rtc_UnpackTime(record->flagAndDt & 0x7fffffff, &clk);
 
-    if(record->flagAndDt & 0x80000000)
-    {
-        Serial.print("+;");
-    }
-    else
-    {
-        Serial.print("-;");
-    }
+    char buffer[32];
 
-    Serial.print(clk.year); Serial.print(".");
-    Serial.print(clk.month); Serial.print(".");
-    Serial.print(clk.day); Serial.print(";");
+    sprintf(buffer, "%c;%04d.%02d.%02d;%02d:%02d:%02d;%d.%d;%d",
+        record->flagAndDt & 0x80000000 ? '+' : '-',
+        clk.year, clk.month, clk.day,
+        clk.hour, clk.min, clk.sec, 
+        record->t/10, abs(record->t%10),
+        record->rh
+    );
 
-    Serial.print(clk.hour); Serial.print(":");
-    Serial.print(clk.min); Serial.print(":");
-    Serial.print(clk.sec); Serial.print(";");
-
-    Serial.print(record->t /10.0); Serial.print(";");
-    Serial.print(record->rh); Serial.print(";");
-
-    Serial.println("");
+    Serial.println(buffer);
 }
 
 /*
