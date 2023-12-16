@@ -102,7 +102,7 @@ void updateClock(void)
                     day = 1;
 
                     month++;
-                    if(month == 12)
+                    if(month == 13)
                     {
                         month = 1;
                         year++;
