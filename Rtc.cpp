@@ -4,6 +4,8 @@
 #include "Rtc.h"
 #include "RtcHal.h"
 
+#define UNIX_EPOCH      1970
+
 static uint8_t second; // 0..59 - 6bit
 static uint8_t minute; // 0..59 - 6bit
 static uint8_t hour;   // 0..23 - 5bit
@@ -22,25 +24,40 @@ static Rtc_ClockState_t clockState;
 /*
  *
  */
-static uint8_t getMaxDay(uint8_t m, uint8_t y)
+static bool isYearLeap(uint16_t y)
+{
+    bool result = false;
+
+    if((y % 4)==0)
+    {
+        if((y % 100)==0)
+        {
+            if((y % 400)==0)
+            {
+                result = true;
+            }
+        }
+        else
+        {
+            result = true;
+        }
+    }
+
+    return result;
+}
+
+/*
+ *
+ */
+static uint8_t getMaxDay(uint8_t m, uint16_t y)
 {
     uint8_t result = maxDayByMonth[m-1];
 
     if(m == 2)
     {
-        if((y % 4)==0)
+        if(isYearLeap(y))
         {
-            if((y % 100)==0)
-            {
-                if((y % 400)==0)
-                {
-                    result++;
-                }
-            }
-            else
-            {
-                result++;
-            }
+            result++;
         }
     }
 
@@ -56,7 +73,7 @@ static uint32_t getPackedState(void)
                       (uint32_t) hour << 6 |
                       (uint32_t) day << 11 |
                       ((uint32_t) month) << 16 |
-                      (((uint32_t) (year-1970))& 0x000000ff) << 20;
+                      (((uint32_t) (year-UNIX_EPOCH))& 0x000000ff) << 20;
 
     return result;
 }
@@ -124,7 +141,7 @@ void Rtc_Init(void)
 
     day = 1;
     month = 1;
-    year = 1970;
+    year = UNIX_EPOCH;
 
     RtcHal_Init();
 }
@@ -167,7 +184,7 @@ bool Rtc_SetRtcState(const Rtc_ClockState_t* newClockState)
         {
             if(newClockState->sec < 60)
             {
-                if(newClockState->year >= 1970)
+                if(newClockState->year >= UNIX_EPOCH)
                 {
                     if(newClockState->month >= 1 && newClockState->month <= 12)
                     {
@@ -206,7 +223,7 @@ void Rtc_UnpackTime(uint32_t dt, Rtc_ClockState_t* state)
     state->hour = (dt & (0x1ful << 6))>>6; 
     state->day = (dt & (0x1ful << 11))>>11;
     state->month = (dt & (0x0ful << 16))>>16;
-    state->year = ((dt & (0xfful << 20))>>20) + 1970;
+    state->year = ((dt & (0xfful << 20))>>20) + UNIX_EPOCH;
 
     state->packed = dt;
 }
