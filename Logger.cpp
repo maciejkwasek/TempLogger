@@ -157,10 +157,7 @@ uint16_t Logger_GetRecord(uint16_t index, Logger_Record_t* record)
             index--;
             if(index == LOGGER_DUMMYIDX)
             {
-                if(metaRecord.numRecords == maxRecords)
-                {
-                    index = maxRecords - 1;
-                }
+                index = maxRecords - 1;
             }
         }
 
