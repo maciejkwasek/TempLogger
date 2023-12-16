@@ -92,7 +92,7 @@ void updateClock(void)
             minute = 0;
 
             hour++;
-            if(hour = 24)
+            if(hour == 24)
             {
                 hour = 0;
 
